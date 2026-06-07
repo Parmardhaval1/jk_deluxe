@@ -37,14 +37,13 @@ dependencies:
   get: ^4.7.2
   get_storage: ^2.1.1  # For persistent storage
   http: ^0.13.5
-  cached_network_image: ^3.2.3
-  flutter_staggered_grid_view: ^0.6.2
   printing: ^5.10.1
   pdf: ^3.10.0
   barcode: ^2.2.0
   barcode_widget: ^2.0.0
   path_provider: ^2.1.1
-
+  cached_network_image: ^3.4.1
+  flutter_staggered_grid_view: ^0.7.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -62,8 +61,8 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/jk.jpg"
-  adaptive_icon_foreground: "assets/jk.jpg"  # For Android 8+ adaptive icons
+  image_path: "assets/jk.png"
+  adaptive_icon_foreground: "assets/jk.png"  # For Android 8+ adaptive icons
   adaptive_icon_background: "#000000"  # Black background
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -78,7 +77,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-  - assets/jk.jpg
+  - assets/jk.png
   - assets/11.jpg
   - assets/12.jpg
   - assets/13.png
