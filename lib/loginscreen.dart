@@ -90,7 +90,7 @@ class LoginScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                'assets/jk.jpg',
+                'assets/jk.png',
                 width: 250,
                 height: 320,
               ),

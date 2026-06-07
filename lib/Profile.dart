@@ -80,7 +80,7 @@ class Profile extends StatelessWidget {
               children: [
                 const SizedBox(height: 10),
                 Image.asset(
-                  'assets/jk.jpg',
+                  'assets/jk.png',
                   width: 200,
                   height: 180,
                 ),
