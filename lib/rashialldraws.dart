@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'api.dart';
 import 'dart:convert';
 import 'package:get_storage/get_storage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -27,7 +28,7 @@ class ToysAlldrawsController extends GetxController {
     try {
       isLoading.value = true;
       final response = await http.get(
-        Uri.parse('https://demojkd.balajitechbiz.com/Application/rashi_alldraw.php'),
+        Uri.parse(Api.getUrl('Application/rashi_alldraw.php')),
       );
 
       if (response.statusCode == 200) {
@@ -41,7 +42,7 @@ class ToysAlldrawsController extends GetxController {
               imagePath = imagePath.substring(1); // Remove leading slash if exists
             }
 
-            final imageUrl = 'https://demojkd.balajitechbiz.com/$imagePath';
+            final imageUrl = Api.getUrl('$imagePath');
             print('Final image URL: $imageUrl');
 
             return {

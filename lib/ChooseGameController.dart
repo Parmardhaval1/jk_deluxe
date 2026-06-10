@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'api.dart';
 import 'dart:convert';
 import 'dart:async';
 import '10rashi.dart';
@@ -50,7 +51,7 @@ class ChooseGameController extends GetxController {
     try {
       isRefreshing.value = true;
       final encodedUsername = Uri.encodeComponent(username.value);
-      final url = Uri.parse('https://demojkd.balajitechbiz.com/Application/result.php?username=$encodedUsername');
+      final url = Uri.parse(Api.getUrl('Application/result.php?username=$encodedUsername'));
 
       print('Yantra Fetching results for: ${username.value}');
       final response = await http.get(url, headers: {'Accept': 'application/json'});
@@ -72,7 +73,7 @@ class ChooseGameController extends GetxController {
     try {
       isRefreshing.value = true;
       final encodedUsername = Uri.encodeComponent(username.value);
-      final url = Uri.parse('https://demojkd.balajitechbiz.com/Application/result1.php?username=$encodedUsername');
+      final url = Uri.parse(Api.getUrl('Application/result1.php?username=$encodedUsername'));
 
       print('Toys Fetching results for: ${username.value}');
       final response = await http.get(url, headers: {'Accept': 'application/json'});
@@ -94,7 +95,7 @@ class ChooseGameController extends GetxController {
     try {
       isRefreshing.value = true;
       final encodedUsername = Uri.encodeComponent(username.value);
-      final url = Uri.parse('https://demojkd.balajitechbiz.com/Application/result2.php?username=$encodedUsername');
+      final url = Uri.parse(Api.getUrl('Application/result2.php?username=$encodedUsername'));
 
       print('Rashi Fetching results for: ${username.value}');
       final response = await http.get(url, headers: {'Accept': 'application/json'});

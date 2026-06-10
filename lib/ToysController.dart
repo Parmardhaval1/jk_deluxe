@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'api.dart';
 import '10toys.dart';
 
 class ToysController extends GetxController {
@@ -29,7 +30,7 @@ class ToysController extends GetxController {
   Future<void> fetchLast5Draws() async {
     try {
       final response = await http.get(
-        Uri.parse('https://demojkd.balajitechbiz.com/Application/last5_toys.php'),
+        Uri.parse(Api.getUrl('Application/last5_toys.php')),
       );
 
       if (response.statusCode == 200) {
@@ -49,7 +50,7 @@ class ToysController extends GetxController {
 
             String imageUrl = draw['image']?.toString() ?? '';
             if (imageUrl.isNotEmpty && !imageUrl.startsWith('http')) {
-              imageUrl = 'https://demojkd.balajitechbiz.com/$imageUrl';
+              imageUrl = Api.getUrl('$imageUrl');
             }
 
             return Item(
@@ -93,7 +94,7 @@ class ToysController extends GetxController {
   Future<void> submitTickets() async {
     try {
       final coinsResponse = await http.post(
-        Uri.parse('https://demojkd.balajitechbiz.com/Application/coins_minus.php'),
+        Uri.parse(Api.getUrl('Application/coins_minus.php')),
         body: json.encode({
           "username": username.value,
           "coins": totalAmount.value,
@@ -116,7 +117,7 @@ class ToysController extends GetxController {
       String barcodeNo = _generate11DigitBarcode();
 
       final response = await http.post(
-        Uri.parse('https://demojkd.balajitechbiz.com/Application/10toys.php'),
+        Uri.parse(Api.getUrl('Application/10toys.php')),
         body: json.encode({
           "usernm": username.value,
           "ticketnm": ticketNames,
@@ -235,7 +236,7 @@ class ToysController extends GetxController {
       print('[${DateTime.now()}] [DEBUG] Current username: ${username.value}');
 
       final response = await http.post(
-        Uri.parse('https://demojkd.balajitechbiz.com/Application/retrieve_coins.php'),
+        Uri.parse(Api.getUrl('Application/retrieve_coins.php')),
         body: json.encode({'username': username.value}),
         headers: {'Content-Type': 'application/json'},
       );
