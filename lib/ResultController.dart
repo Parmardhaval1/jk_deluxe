@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'api.dart';
 import 'dart:convert';
 import 'dart:async';
 
@@ -88,7 +89,7 @@ class ResultController extends GetxController {
       errorMessage('');
 
       final encodedUsername = Uri.encodeComponent(username.value);
-      final url = Uri.parse('https://demojkd.balajitechbiz.com/Application/result.php?username=$encodedUsername');
+      final url = Uri.parse(Api.getUrl('Application/result.php?username=$encodedUsername'));
 
       print('Fetching results for: ${username.value}');
       final response = await http.get(

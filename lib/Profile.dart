@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'api.dart';
 import 'dart:convert';
 import 'package:get_storage/get_storage.dart';
 
@@ -24,7 +25,7 @@ class ProfileController extends GetxController {
     try {
       isLoading.value = true;
       final response = await http.get(
-        Uri.parse('https://demojkd.balajitechbiz.com/Application/profile.php?username=${username.value}'),
+        Uri.parse(Api.getUrl('Application/profile.php?username=${username.value}')),
       );
 
       if (response.statusCode == 200) {

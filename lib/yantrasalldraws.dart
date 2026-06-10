@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'api.dart';
 import 'dart:convert';
 import 'package:get_storage/get_storage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -27,7 +28,7 @@ class YantraHistoryControl extends GetxController {
     try {
       isLoading.value = true;
       final response = await http.get(
-        Uri.parse('https://demojkd.balajitechbiz.com/Application/yantra_alldraw.php'),
+        Uri.parse(Api.getUrl('Application/yantra_alldraw.php')),
       );
 
       if (response.statusCode == 200) {
@@ -38,7 +39,7 @@ class YantraHistoryControl extends GetxController {
             // Debug print to check the image data
             print('Original image path: ${item['image']}');
 
-            final imageUrl = 'https://demojkd.balajitechbiz.com/${item['image']}';
+            final imageUrl = Api.getUrl(item['image'].toString());
             print('Constructed image URL: $imageUrl');
 
             return {

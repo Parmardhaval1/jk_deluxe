@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'api.dart';
 import 'dart:convert';
 import 'package:get_storage/get_storage.dart';
 import 'package:latest_jk/choosegame.dart';
@@ -27,7 +28,7 @@ class LoginController extends GetxController {
 
     try {
       final response = await http.post(
-        Uri.parse('https://demojkd.balajitechbiz.com/Application/user_login.php'),
+        Uri.parse(Api.getUrl('Application/user_login.php')),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'username': username.value,

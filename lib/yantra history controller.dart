@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'api.dart';
 import 'dart:convert';
 import 'dart:async';
 
@@ -81,7 +82,7 @@ class YantraHistoryController extends GetxController {
       errorMessage('');
 
       final encodedUsername = Uri.encodeComponent(username.value);
-      final url = Uri.parse('https://demojkd.balajitechbiz.com/Application/yantra_history.php?usernm=$encodedUsername');
+      final url = Uri.parse(Api.getUrl('Application/yantra_history.php?usernm=$encodedUsername'));
 
       final response = await http.get(
         url,
