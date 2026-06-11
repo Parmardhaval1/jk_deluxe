@@ -15,31 +15,36 @@ void showSuccessDialog(String message) {
   Get.dialog(
     Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.check_circle, color: Colors.green, size: 56),
-            const SizedBox(height: 12),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 18),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Get.back(),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0E2B76),
-                  foregroundColor: Colors.white,
-                ),
-                child: const Text('OK'),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 56, vertical: 24),
+      child: SizedBox(
+        width: 250, // compact, well-proportioned width
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.check_circle, color: Colors.green, size: 52),
+              const SizedBox(height: 12),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Get.back(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0E2B76),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('OK'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     ),
@@ -106,6 +111,26 @@ Widget refreshAction(RxBool isRefreshing, VoidCallback onRefresh,
           icon: Icon(Icons.refresh, color: color),
           tooltip: 'Refresh',
           onPressed: onRefresh,
+        ));
+}
+
+/// Delete-last-ticket action for the game action row: a delete icon that turns
+/// into a spinner (and is disabled) while the delete is in progress.
+Widget deleteTicketButton(RxBool isDeleting, VoidCallback onDelete) {
+  return Obx(() => isDeleting.value
+      ? const Padding(
+          padding: EdgeInsets.all(12),
+          child: SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+                strokeWidth: 2, color: Color(0xFF0E2B76)),
+          ),
+        )
+      : IconButton(
+          tooltip: 'Delete last ticket',
+          icon: const Icon(Icons.delete_outline, color: Colors.red),
+          onPressed: onDelete,
         ));
 }
 

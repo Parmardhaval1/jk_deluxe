@@ -87,20 +87,6 @@ class Yantras extends StatelessWidget {
                 ],
               ),
               actions: [
-                Obx(() => IconButton(
-                      tooltip: 'Delete last ticket',
-                      icon: controller.isDeleting.value
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Colors.white),
-                            )
-                          : const Icon(Icons.delete_outline, color: Colors.white),
-                      onPressed: controller.isDeleting.value
-                          ? null
-                          : () => controller.deleteLastTicket(),
-                    )),
                 refreshAction(controller.isRefreshing, controller.manualRefresh),
               ],
 
@@ -420,6 +406,9 @@ class Yantras extends StatelessWidget {
                                       ? buttonSpinner()
                                       : const Text('Ok'),
                                 ),
+                                const SizedBox(width: 8),
+                                deleteTicketButton(controller.isDeleting,
+                                    () => controller.deleteLastTicket()),
                               ],
                             ),
                           ],
