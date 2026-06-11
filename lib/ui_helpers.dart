@@ -158,24 +158,19 @@ Widget refreshAction(RxBool isRefreshing, VoidCallback onRefresh,
         ));
 }
 
-/// Delete-last-ticket action for the game action row: a delete icon that turns
-/// into a spinner (and is disabled) while the delete is in progress.
+/// Delete-last-ticket action for the game action row: a 'Delete' button styled
+/// like the Clear / All Draws / OK buttons that shows a spinner (and is
+/// disabled) while the delete is in progress.
 Widget deleteTicketButton(RxBool isDeleting, VoidCallback onDelete) {
-  return Obx(() => isDeleting.value
-      ? const Padding(
-          padding: EdgeInsets.all(12),
-          child: SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(
-                strokeWidth: 2, color: Color(0xFF0E2B76)),
-          ),
-        )
-      : IconButton(
-          tooltip: 'Delete last ticket',
-          icon: const Icon(Icons.delete_outline, color: Colors.red),
-          onPressed: onDelete,
-        ));
+  return Obx(() => ElevatedButton(
+        onPressed: isDeleting.value ? null : onDelete,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF0E2B76),
+          foregroundColor: Colors.white,
+          minimumSize: const Size(40, 20),
+        ),
+        child: isDeleting.value ? buttonSpinner() : const Text('Delete'),
+      ));
 }
 
 /// Removes HTML tags / entities (e.g. the `<br><span>JACKPOT 2X</span>` the
