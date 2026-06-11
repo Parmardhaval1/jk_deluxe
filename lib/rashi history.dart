@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'rashi history controller.dart';
+import 'ui_helpers.dart';
 
 class RashiHistory extends StatelessWidget {
   final String username;
   final RashiHistoryController controller;
 
-  RashiHistory({required this.username}) : controller = Get.put(RashiHistoryController()) {
+  RashiHistory({required this.username})
+      : controller = Get.put(RashiHistoryController()) {
     controller.setUsername(username);
   }
 
@@ -41,132 +43,62 @@ class RashiHistory extends StatelessWidget {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
-
         if (controller.historyData.isEmpty) {
           return const Center(
-            child: Text(
-                'No history data available',
+            child: Text('No history data available',
                 style: TextStyle(fontSize: 18)),
           );
         }
-
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            final isSmallScreen = constraints.maxWidth < 600;
-            return SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minWidth: constraints.maxWidth),
-                  child: DataTable(
-                    columnSpacing: isSmallScreen ? 8 : 16, horizontalMargin: 8, headingRowHeight: 44, border: TableBorder.all(color: Colors.grey.shade500, width: 1),
-                    dataRowMinHeight: 42,
-                    dataRowMaxHeight: 80,
-                    columns: const [
-                      DataColumn(
-                        label: Text(
-                          'Ticket Name',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Count',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        numeric: true,
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Amount',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        numeric: true,
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Draw Time',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Open Draw',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Result',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      DataColumn(
-                        label: Text(
-                          'Win Amount',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        numeric: true,
-                      ),
-                    ],
-                    rows: controller.historyData.map((data) {
-                      return DataRow(
-                        cells: [
-                          DataCell(
-                            SizedBox(
-                              width: isSmallScreen ? 110 : 180,
-                              child: Text(
-                                data['ticketnm']?.toString() ?? 'N/A',
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          DataCell(
-                            Text(
-                              data['ticketCount']?.toString() ?? '0',
-                              textAlign: TextAlign.end,
-                            ),
-                          ),
-                          DataCell(
-                            Text(
-                              '₹${data['totamount']?.toString() ?? '0'}',
-                              textAlign: TextAlign.end,
-                            ),
-                          ),
-                          DataCell(
-                            Text(data['drawtime']?.toString() ?? 'N/A'),
-                          ),
-                          DataCell(
-                            SizedBox(
-                              width: isSmallScreen ? 90 : 150,
-                              child: Text(data['drawopen']?.toString() ?? 'N/A'),
-                            ),
-                          ),
-                          DataCell(
-                            Text(
-                              (data['result']?.toString() ?? 'PENDING').toUpperCase(),
-                              style: TextStyle(
-                                color: (data['isWin'] == true) ? Colors.green : Colors.red,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          DataCell(
-                            Text(
-                              '₹${data['winamount']?.toString() ?? '0'}',
-                              textAlign: TextAlign.end,
-                            ),
-                          ),
-                        ],
-                      );
-                    }).toList(),
-                  ),
-                ),
+        // A flex Table fills the available width exactly, so all 7 columns are
+        // visible with NO horizontal scrolling; long values simply wrap.
+        return SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          padding: const EdgeInsets.all(6),
+          child: Table(
+            border: TableBorder.all(color: Colors.grey.shade600, width: 1),
+            columnWidths: const {
+              0: FlexColumnWidth(2.7), // Ticket Name
+              1: FlexColumnWidth(0.9), // Count
+              2: FlexColumnWidth(1.3), // Amount
+              3: FlexColumnWidth(1.7), // Draw Time
+              4: FlexColumnWidth(2.1), // Open Draw
+              5: FlexColumnWidth(1.6), // Result
+              6: FlexColumnWidth(1.4), // Win
+            },
+            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+            children: [
+              TableRow(
+                decoration: const BoxDecoration(color: Color(0xFF0E2B76)),
+                children: [
+                  historyCell('Ticket Name', header: true),
+                  historyCell('Count', header: true),
+                  historyCell('Amount', header: true),
+                  historyCell('Draw Time', header: true),
+                  historyCell('Open Draw', header: true),
+                  historyCell('Result', header: true),
+                  historyCell('Win', header: true),
+                ],
               ),
-            );
-          },
+              ...controller.historyData.map((data) {
+                final isWin = data['isWin'] == true;
+                final open = stripHtml(data['drawopen']?.toString());
+                return TableRow(
+                  children: [
+                    historyCell(data['ticketnm']?.toString() ?? 'N/A',
+                        align: TextAlign.left),
+                    historyCell(data['ticketCount']?.toString() ?? '0'),
+                    historyCell('₹${data['totamount']?.toString() ?? '0'}'),
+                    historyCell(data['drawtime']?.toString() ?? 'N/A'),
+                    historyCell(open.isEmpty ? 'N/A' : open),
+                    historyCell(
+                        (data['result']?.toString() ?? 'PENDING').toUpperCase(),
+                        color: isWin ? Colors.green : Colors.red),
+                    historyCell('₹${data['winamount']?.toString() ?? '0'}'),
+                  ],
+                );
+              }).toList(),
+            ],
+          ),
         );
       }),
     );

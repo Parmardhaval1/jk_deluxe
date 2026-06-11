@@ -80,3 +80,35 @@ Widget buttonSpinner() => const SizedBox(
       height: 18,
       child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
     );
+
+/// Removes HTML tags / entities (e.g. the `<br><span>JACKPOT 2X</span>` the
+/// server stores in 'drawopen') and collapses whitespace, so values render as
+/// clean readable text in the history table.
+String stripHtml(String? s) {
+  if (s == null) return '';
+  return s
+      .replaceAll(RegExp(r'<[^>]*>'), ' ')
+      .replaceAll(RegExp(r'&nbsp;', caseSensitive: false), ' ')
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .trim();
+}
+
+/// One cell of the compact history [Table]. Text wraps to fit the column so the
+/// whole 7-column table fits the screen width with no horizontal scrolling.
+Widget historyCell(String text,
+    {bool header = false, Color? color, TextAlign align = TextAlign.center}) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 6),
+    child: Text(
+      text,
+      textAlign: align,
+      softWrap: true,
+      style: TextStyle(
+        fontSize: header ? 11 : 11.5,
+        height: 1.15,
+        fontWeight: header ? FontWeight.bold : FontWeight.w500,
+        color: header ? Colors.white : color,
+      ),
+    ),
+  );
+}
