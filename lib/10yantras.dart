@@ -575,15 +575,16 @@ class Yantras extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              Obx(() =>
-                  Row(
+              Obx(() => SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
                         controller.last5Draws.length, (index) {
                       Item item = controller.last5Draws[index];
                       return Container(
                         width: 98,
-                        height: 130,
+                        height: 150,
                         decoration: BoxDecoration(
                           color: Colors.blueGrey.shade100,
                           borderRadius: BorderRadius.circular(10),
@@ -619,11 +620,16 @@ class Yantras extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 6),
-                              Text(
-                                item.title,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
+                              Flexible(
+                                child: Text(
+                                  item.title,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ],
@@ -631,7 +637,7 @@ class Yantras extends StatelessWidget {
                         ),
                       );
                     }),
-                  )),
+                  ))),
             ],
           ),
         ),
