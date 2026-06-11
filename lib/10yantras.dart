@@ -220,7 +220,7 @@ class Yantras extends StatelessWidget {
                                             height: 50,
                                             decoration: BoxDecoration(
                                               image: DecorationImage(
-                                                image: AssetImage(item.img),
+                                                image: itemImageProvider(item.img),
                                               ),
                                             ),
                                           ),
@@ -310,7 +310,7 @@ class Yantras extends StatelessWidget {
                                                 height: 50,
                                                 decoration: BoxDecoration(
                                                   image: DecorationImage(
-                                                    image: AssetImage(item.img),
+                                                    image: itemImageProvider(item.img),
                                                   ),
                                                 ),
                                               ),
@@ -615,7 +615,7 @@ class Yantras extends StatelessWidget {
                                 height: 50,
                                 decoration: BoxDecoration(
                                   image: DecorationImage(
-                                    image: AssetImage(item.img),
+                                    image: itemImageProvider(item.img),
                                   ),
                                 ),
                               ),

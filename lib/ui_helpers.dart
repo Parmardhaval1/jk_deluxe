@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
+/// Image provider for a game item / draw: a cached NETWORK image when [path] is
+/// a URL (the dynamic admin-managed images), else a bundled AssetImage (initial
+/// fallback before the dynamic list loads). The ?v=<mtime> on dynamic URLs makes
+/// a re-uploaded image refresh automatically.
+ImageProvider itemImageProvider(String path) =>
+    path.startsWith('http') ? CachedNetworkImageProvider(path) : AssetImage(path);
 
 /// Centered success dialog (e.g. after a ticket purchase). Stays on screen,
 /// clearly visible, until the user taps OK.

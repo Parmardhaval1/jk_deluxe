@@ -223,7 +223,7 @@ class Rashi extends StatelessWidget {
                                             height: 50,
                                             decoration: BoxDecoration(
                                               image: DecorationImage(
-                                                image: AssetImage(item.img),
+                                                image: itemImageProvider(item.img),
                                               ),
                                             ),
                                           ),
@@ -313,7 +313,7 @@ class Rashi extends StatelessWidget {
                                                 height: 50,
                                                 decoration: BoxDecoration(
                                                   image: DecorationImage(
-                                                    image: AssetImage(item.img),
+                                                    image: itemImageProvider(item.img),
                                                   ),
                                                 ),
                                               ),

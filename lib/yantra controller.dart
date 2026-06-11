@@ -48,13 +48,8 @@ class YantrasController extends GetxController {
                 formattedDate = '${dateParts[2]}/${dateParts[1]}/${dateParts[0]}';
               }
             }
-            // Extract image number from image path
-            final imagePath = draw['image'].toString();
-            final imageFile = imagePath.split('/').last; // e.g., "1.jpg"
-            final imageNumber = imageFile.split('.').first; // "1"
-
             return Item(
-              img: 'assets/$imageNumber.jpg',
+              img: Api.getUrl(draw['image'].toString()), // dynamic server image
               title: draw['tktname'].toString(),
               date: formattedDate,
               time: draw['drawtime'].toString(),
@@ -369,14 +364,8 @@ class YantrasController extends GetxController {
     fetchAvailableCoins();
     fetchLast5Draws();
 
-    for (var item in data) {
-      itemCountMap[item.title] = 0;
-      textControllers[item.title] = TextEditingController();
-    }
-    for (var item in data2) {
-      itemCountMap[item.title] = 0;
-      textControllers[item.title] = TextEditingController();
-    }
+    _initItemMaps();
+    fetchItems(); // load admin-managed dynamic item names + images
 
     _startClock();
     _startSessionTimer();
@@ -384,6 +373,58 @@ class YantrasController extends GetxController {
     timeSession.value = _getCurrentSession();
     currentDate.value = _getCurrentDate();
     remainingTime.value = _getRemainingTime();
+  }
+
+  /// (Re)initialise the per-item bet-count + text-controller maps for the
+  /// current [data]/[data2] titles, keeping existing values and dropping any
+  /// titles that no longer exist.
+  void _initItemMaps() {
+    final titles = <String>{};
+    for (final item in [...data, ...data2]) {
+      titles.add(item.title);
+      itemCountMap.putIfAbsent(item.title, () => 0);
+      textControllers.putIfAbsent(item.title, () => TextEditingController());
+    }
+    for (final k
+        in itemCountMap.keys.where((k) => !titles.contains(k)).toList()) {
+      itemCountMap.remove(k);
+      textControllers.remove(k)?.dispose();
+    }
+  }
+
+  /// Load item names + images dynamically from the admin "Manage Items" data
+  /// (get_items.php) so admin changes appear without an app update. Silently
+  /// keeps the bundled defaults on any error.
+  Future<void> fetchItems() async {
+    try {
+      final response = await http.get(
+          Uri.parse(Api.getUrl('Application/get_items.php?game=yantra')));
+      if (response.statusCode != 200) return;
+      final body = json.decode(response.body);
+      if (body['success'] != true || body['data'] is! List) return;
+      final newData = <Item>[];
+      final newData2 = <Item>[];
+      for (final it in (body['data'] as List)) {
+        final pos = int.tryParse('${it['position']}') ?? 0;
+        final title = (it['name'] ?? '').toString();
+        final img =
+            Api.getUrl((it['image_url'] ?? it['image'] ?? '').toString());
+        if (pos < 1 || title.isEmpty) continue;
+        final item = Item(img: img, title: title, date: '', time: '');
+        if (pos <= 5) {
+          newData.add(item);
+        } else {
+          newData2.add(item);
+        }
+      }
+      if (newData.length == 5 && newData2.length == 5) {
+        data.assignAll(newData);
+        data2.assignAll(newData2);
+        _initItemMaps();
+      }
+    } catch (_) {
+      // keep bundled defaults
+    }
   }
 
   void _startClock() {
