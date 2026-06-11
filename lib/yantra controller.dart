@@ -40,7 +40,7 @@ class YantrasController extends GetxController {
         if (responseData['success'] == true && responseData['data'] is List) {
           List<dynamic> drawList = responseData['data'];
 
-          last5Draws.assignAll(drawList.map((draw) {
+          last5Draws.assignAll(groupDrawsBySlot(drawList).take(5).map((draw) {
             String formattedDate = '--/--/----';
             if (draw['drawdate'] != null && draw['drawdate'].toString().contains('-')) {
               final dateParts = draw['drawdate'].toString().split('-');

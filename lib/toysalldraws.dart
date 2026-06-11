@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:get_storage/get_storage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'ui_helpers.dart';
 
 class ToysAlldrawsController extends GetxController {
   final box = GetStorage();
@@ -34,7 +35,7 @@ class ToysAlldrawsController extends GetxController {
       if (response.statusCode == 200) {
         final result = json.decode(response.body);
         if (result['success'] == true) {
-          final items = List<Map<String, dynamic>>.from(result['data'])
+          final items = groupDrawsBySlot(result['data'])
               .map((item) {
             // Ensure image path is properly formatted
             String imagePath = item['image'].toString();

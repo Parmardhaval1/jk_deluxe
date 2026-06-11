@@ -93,6 +93,49 @@ String stripHtml(String? s) {
       .trim();
 }
 
+/// Groups draw rows that share the same (drawdate, drawtime) into ONE entry:
+/// the names are joined with ' / ' (in id order, e.g. "A / B") and the first
+/// selected row's image is kept. Mirrors the web's getGroupedDrawCards so a
+/// "Double Dhamaka" (two draws in one slot) shows a single image with both
+/// names instead of two separate cards.
+///
+/// Input rows are the raw API maps (keys 'image','tktname','drawdate'/'date',
+/// 'drawtime'/'time', optional 'id'), newest-first; output keeps that slot order.
+List<Map<String, dynamic>> groupDrawsBySlot(List<dynamic> rows) {
+  final List<String> order = [];
+  final Map<String, List<Map<String, dynamic>>> groups = {};
+  for (final raw in rows) {
+    if (raw is! Map) continue;
+    final row = Map<String, dynamic>.from(raw);
+    final date = (row['drawdate'] ?? row['date'] ?? '').toString();
+    final time = (row['drawtime'] ?? row['time'] ?? '').toString();
+    final key = '$date|$time';
+    if (!groups.containsKey(key)) {
+      groups[key] = [];
+      order.add(key);
+    }
+    groups[key]!.add(row);
+  }
+
+  final List<Map<String, dynamic>> out = [];
+  for (final key in order) {
+    final g = groups[key]!;
+    g.sort((a, b) => (int.tryParse('${a['id']}') ?? 0)
+        .compareTo(int.tryParse('${b['id']}') ?? 0));
+    final names = g
+        .map((r) => (r['tktname'] ?? r['title'] ?? '').toString())
+        .where((s) => s.isNotEmpty)
+        .join(' / ');
+    out.add({
+      'image': g.first['image'],
+      'tktname': names,
+      'drawdate': (g.first['drawdate'] ?? g.first['date'] ?? '').toString(),
+      'drawtime': (g.first['drawtime'] ?? g.first['time'] ?? '').toString(),
+    });
+  }
+  return out;
+}
+
 /// One cell of the compact history [Table]. Text wraps to fit the column so the
 /// whole 7-column table fits the screen width with no horizontal scrolling.
 Widget historyCell(String text,
