@@ -7,6 +7,7 @@ import 'LoginScreen.dart';
 import 'Profile.dart';
 import 'choosegame.dart';
 import 'yantra controller.dart';
+import 'ui_helpers.dart';
 
 class Item {
   final String img;
@@ -381,8 +382,10 @@ class Yantras extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 20),
                                 ElevatedButton(
-                                  onPressed: controller.isLessThanThirtySeconds
-                                      .value ? null : () {
+                                  onPressed: (controller.isLessThanThirtySeconds.value ||
+                                          controller.isSubmitting.value)
+                                      ? null
+                                      : () {
                                     if (controller.totalClicks.value > 0) {
                                       controller.submitTickets();
                                     } else {
@@ -404,7 +407,9 @@ class Yantras extends StatelessWidget {
                                     foregroundColor: Colors.white,
                                     minimumSize: const Size(70, 20),
                                   ),
-                                  child: const Text('Ok'),
+                                  child: controller.isSubmitting.value
+                                      ? buttonSpinner()
+                                      : const Text('Ok'),
                                 ),
                               ],
                             ),

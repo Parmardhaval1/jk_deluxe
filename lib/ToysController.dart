@@ -7,6 +7,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'api.dart';
 import '10toys.dart';
+import 'ui_helpers.dart';
 
 class ToysController extends GetxController {
   var data = <Item>[
@@ -76,6 +77,7 @@ class ToysController extends GetxController {
   var totalAmount = 0.obs;
   var initialAvailable = 0.obs;
   final available = 0.obs;
+  final isSubmitting = false.obs; // true while a ticket purchase is in flight
   var totalClicks = 0.obs;
   var selectedButtonIndex = (-1).obs;
   var countdownDuration = const Duration(minutes: 5);
@@ -92,6 +94,8 @@ class ToysController extends GetxController {
   RxString selectedNumber = ''.obs;
 
   Future<void> submitTickets() async {
+    if (isSubmitting.value) return; // prevent double-submit while in flight
+    isSubmitting.value = true;
     try {
       final coinsResponse = await http.post(
         Uri.parse(Api.getUrl('Application/coins_minus.php')),
@@ -134,14 +138,7 @@ class ToysController extends GetxController {
         clearAll(); // Clear selections
         await fetchAvailableCoins(); // Refresh coin balance
 
-        Get.snackbar(
-          'Success',
-          'Tickets submitted successfully',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          duration: Duration(milliseconds: 500), // ✅ 0.5 second ke liye
-        );
+        showSuccessDialog('Ticket Purchased Successfully');
       } else {
         Get.snackbar(
           'Error',
@@ -159,6 +156,8 @@ class ToysController extends GetxController {
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );
+    } finally {
+      isSubmitting.value = false;
     }
   }
 
