@@ -91,6 +91,20 @@ class Toys extends StatelessWidget {
                 ],
               ),
               actions: [
+                Obx(() => IconButton(
+                      tooltip: 'Delete last ticket',
+                      icon: controller.isDeleting.value
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: Colors.white),
+                            )
+                          : const Icon(Icons.delete_outline, color: Colors.white),
+                      onPressed: controller.isDeleting.value
+                          ? null
+                          : () => controller.deleteLastTicket(),
+                    )),
                 IconButton(
                   icon: const Icon(Icons.refresh, color: Colors.white),
                   onPressed: () {

@@ -39,6 +39,40 @@ void showSuccessDialog(String message) {
   );
 }
 
+/// Yes/No confirmation dialog. Resolves to true only if the user confirms.
+Future<bool> showConfirmDialog({
+  required String title,
+  required String message,
+  String confirmText = 'Delete',
+  String cancelText = 'Cancel',
+  Color confirmColor = Colors.red,
+}) async {
+  final result = await Get.dialog<bool>(
+    AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      title: Text(title, textAlign: TextAlign.center),
+      content: Text(message, textAlign: TextAlign.center),
+      actionsAlignment: MainAxisAlignment.center,
+      actions: [
+        TextButton(
+          onPressed: () => Get.back(result: false),
+          child: Text(cancelText),
+        ),
+        ElevatedButton(
+          onPressed: () => Get.back(result: true),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: confirmColor,
+            foregroundColor: Colors.white,
+          ),
+          child: Text(confirmText),
+        ),
+      ],
+    ),
+    barrierDismissible: false,
+  );
+  return result ?? false;
+}
+
 /// A small white spinner sized to sit inside a button in place of its label,
 /// used to show an action is in progress (and the button is disabled).
 Widget buttonSpinner() => const SizedBox(

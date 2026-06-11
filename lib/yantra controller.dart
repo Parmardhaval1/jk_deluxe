@@ -76,6 +76,7 @@ class YantrasController extends GetxController {
   var initialAvailable = 0.obs;
   final available = 0.obs;
   final isSubmitting = false.obs; // true while a ticket purchase is in flight
+  final isDeleting = false.obs; // true while deleting the last ticket
   var totalClicks = 0.obs;
   var selectedButtonIndex = (-1).obs;
   var countdownDuration = const Duration(minutes: 5);
@@ -155,6 +156,49 @@ class YantrasController extends GetxController {
       );
     } finally {
       isSubmitting.value = false;
+    }
+  }
+
+  /// Delete the user's most recently purchased (still-undrawn) ticket for this
+  /// game, after a confirmation. The coins for that ticket are refunded.
+  Future<void> deleteLastTicket() async {
+    if (isDeleting.value) return;
+    final confirmed = await showConfirmDialog(
+      title: 'Delete Last Ticket',
+      message: 'Delete your most recently purchased ticket? The coins for it will be refunded.',
+    );
+    if (!confirmed) return;
+    isDeleting.value = true;
+    try {
+      final response = await http.post(
+        Uri.parse(Api.getUrl('Application/delete_last_ticket.php')),
+        body: json.encode({'username': username.value, 'game': 'yantra'}),
+        headers: {'Content-Type': 'application/json'},
+      );
+      final data = json.decode(response.body);
+      if (response.statusCode == 200 && data['success'] == true) {
+        await fetchAvailableCoins();
+        fetchLast5Draws();
+        showSuccessDialog('Last ticket deleted successfully');
+      } else {
+        Get.snackbar(
+          'Error',
+          (data['message'] ?? 'Could not delete ticket').toString(),
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'An error occurred: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isDeleting.value = false;
     }
   }
 
