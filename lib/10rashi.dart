@@ -105,13 +105,7 @@ class Rashi extends StatelessWidget {
                           ? null
                           : () => controller.deleteLastTicket(),
                     )),
-                IconButton(
-                  icon: const Icon(Icons.refresh, color: Colors.white),
-                  onPressed: () {
-                    controller.fetchAvailableCoins();
-                    controller.fetchLast5Draws();
-                  },
-                ),
+                refreshAction(controller.isRefreshing, controller.manualRefresh),
               ],
             ),
           ),

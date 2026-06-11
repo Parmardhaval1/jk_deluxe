@@ -72,6 +72,7 @@ class YantrasController extends GetxController {
   final available = 0.obs;
   final isSubmitting = false.obs; // true while a ticket purchase is in flight
   final isDeleting = false.obs; // true while deleting the last ticket
+  final isRefreshing = false.obs; // true while a manual refresh is running
   var totalClicks = 0.obs;
   var selectedButtonIndex = (-1).obs;
   var countdownDuration = const Duration(minutes: 5);
@@ -424,6 +425,19 @@ class YantrasController extends GetxController {
       }
     } catch (_) {
       // keep bundled defaults
+    }
+  }
+
+  /// Manual refresh (AppBar button): reloads coins + last-5 draws, guarded so it
+  /// can't run twice at once.
+  Future<void> manualRefresh() async {
+    if (isRefreshing.value) return;
+    isRefreshing.value = true;
+    try {
+      await fetchAvailableCoins();
+      await fetchLast5Draws();
+    } finally {
+      isRefreshing.value = false;
     }
   }
 

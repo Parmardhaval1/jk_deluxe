@@ -157,7 +157,7 @@ class RashiHistoryController extends GetxController {
   }
 
   void manualRefresh() {
-    print('\n--- Manual refresh triggered ---');
+    if (isRefreshing.value) return; // prevent overlapping refreshes
     _fetchHistoryData();
   }
 }

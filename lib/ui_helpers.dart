@@ -89,6 +89,26 @@ Widget buttonSpinner() => const SizedBox(
       child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
     );
 
+/// An AppBar refresh action that shows a spinner while [isRefreshing] is true
+/// (and hides the button so it can't be tapped again), else a refresh icon.
+Widget refreshAction(RxBool isRefreshing, VoidCallback onRefresh,
+    {Color color = Colors.white}) {
+  return Obx(() => isRefreshing.value
+      ? Padding(
+          padding: const EdgeInsets.all(14),
+          child: SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(color: color, strokeWidth: 2),
+          ),
+        )
+      : IconButton(
+          icon: Icon(Icons.refresh, color: color),
+          tooltip: 'Refresh',
+          onPressed: onRefresh,
+        ));
+}
+
 /// Removes HTML tags / entities (e.g. the `<br><span>JACKPOT 2X</span>` the
 /// server stores in 'drawopen') and collapses whitespace, so values render as
 /// clean readable text in the history table.

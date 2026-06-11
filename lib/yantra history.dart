@@ -33,10 +33,7 @@ class YantraHistory extends StatelessWidget {
         ),
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: controller.manualRefresh,
-          ),
+          refreshAction(controller.isRefreshing, controller.manualRefresh),
         ],
       ),
       body: Obx(() {
