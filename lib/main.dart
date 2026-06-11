@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:latest_jk/yantra%20history%20controller.dart';
 import 'ChooseGameController.dart';
-import 'ResultController.dart';
 import 'authentication.dart';
 
 void main() async {
