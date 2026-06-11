@@ -60,9 +60,13 @@ class YantraHistory extends StatelessWidget {
                 child: ConstrainedBox(
                   constraints: BoxConstraints(minWidth: constraints.maxWidth),
                   child: DataTable(
-                    columnSpacing: isSmallScreen ? 12 : 24,
-                    dataRowMinHeight: 60, // Allows ~4 lines of text
-                    dataRowMaxHeight: 100, // Optional max height
+                    border: TableBorder.all(
+                        color: Colors.grey.shade500, width: 1),
+                    columnSpacing: isSmallScreen ? 8 : 16,
+                    horizontalMargin: 8,
+                    headingRowHeight: 44,
+                    dataRowMinHeight: 42,
+                    dataRowMaxHeight: 80,
                     columns: const [
                       DataColumn(
                         label: Text(
@@ -115,10 +119,10 @@ class YantraHistory extends StatelessWidget {
                         cells: [
                           DataCell(
                             SizedBox(
-                              width: isSmallScreen ? 150 : 250,
+                              width: isSmallScreen ? 110 : 180,
                               child: Text(
                                 data['ticketnm']?.toString() ?? 'N/A',
-                                maxLines: 5,
+                                maxLines: 3,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
@@ -140,7 +144,7 @@ class YantraHistory extends StatelessWidget {
                           ),
                           DataCell(
                             SizedBox(
-                              width: isSmallScreen ? 100 : 200,
+                              width: isSmallScreen ? 90 : 150,
                               child: Text(data['drawopen']?.toString() ?? 'N/A'),
                             ),
                           ),
