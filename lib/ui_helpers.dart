@@ -52,6 +52,50 @@ void showSuccessDialog(String message) {
   );
 }
 
+/// Dialog shown when the ADMIN adds coins to the account (distinct from the
+/// winning popup).
+void showCoinsAddedDialog(int amount) {
+  Get.dialog(
+    Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 56, vertical: 24),
+      child: SizedBox(
+        width: 250,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.account_balance_wallet,
+                  color: Color(0xFF0E2B76), size: 50),
+              const SizedBox(height: 12),
+              Text(
+                '$amount Coins have been added to your account.',
+                textAlign: TextAlign.center,
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Get.back(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0E2B76),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('OK'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+    barrierDismissible: false,
+  );
+}
+
 /// Yes/No confirmation dialog. Resolves to true only if the user confirms.
 Future<bool> showConfirmDialog({
   required String title,

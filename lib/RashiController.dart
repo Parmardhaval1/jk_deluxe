@@ -81,6 +81,7 @@ class RashioController extends GetxController {
   final isSubmitting = false.obs; // true while a ticket purchase is in flight
   final isDeleting = false.obs; // true while deleting the last ticket
   final isRefreshing = false.obs; // true while a manual refresh is running
+  bool _coinsInitialized = false; // skip win/added popups on the first coin fetch
   var totalClicks = 0.obs;
   var selectedButtonIndex = (-1).obs;
   var countdownDuration = const Duration(minutes: 5);
@@ -275,6 +276,26 @@ class RashioController extends GetxController {
   //   );
   // }
 
+  /// Returns admin-added coins since the last check (0 on the first call, which
+  /// only records the marker). Lets fetchAvailableCoins tell an admin top-up
+  /// apart from a win.
+  Future<int> _checkAdminCredit() async {
+    try {
+      final since = box.read('coinSince_${username.value}');
+      final base =
+          'Application/admin_credit.php?username=${Uri.encodeComponent(username.value)}';
+      final url = since == null ? base : '$base&since=$since';
+      final r = await http.get(Uri.parse(Api.getUrl(url)));
+      if (r.statusCode != 200) return 0;
+      final d = json.decode(r.body);
+      if (d['success'] != true) return 0;
+      box.write('coinSince_${username.value}', d['last_id']);
+      return since == null ? 0 : (int.tryParse('${d['added']}') ?? 0);
+    } catch (_) {
+      return 0;
+    }
+  }
+
   Future<void> fetchAvailableCoins() async {
     try {
       print('[${DateTime.now()}] [DEBUG] Starting fetchAvailableCoins()');
@@ -299,12 +320,20 @@ class RashioController extends GetxController {
           print('[${DateTime.now()}] [DEBUG] Before update - initialAvailable: ${initialAvailable.value}, available: ${available.value}');
 
           final oldCoins = available.value;
+          final wasInitialized = _coinsInitialized;
           final difference = newCoins - oldCoins;
 
-          if (difference > 0 && difference % 100 == 0) {
-            final multiple = difference ~/ 100;
-            _showWinDialog(multiple * 100);
+          // Distinguish admin-added coins from game winnings; skip on first poll.
+          final adminAdded = await _checkAdminCredit();
+
+          if (wasInitialized) {
+            if (adminAdded > 0) {
+              showCoinsAddedDialog(adminAdded);
+            } else if (difference > 0 && difference % 100 == 0) {
+              _showWinDialog(difference);
+            }
           }
+          _coinsInitialized = true;
 
           initialAvailable.value = newCoins;
           available.value = newCoins;
