@@ -192,7 +192,32 @@ String stripHtml(String? s) {
 /// names instead of two separate cards.
 ///
 /// Input rows are the raw API maps (keys 'image','tktname','drawdate'/'date',
-/// 'drawtime'/'time', optional 'id'), newest-first; output keeps that slot order.
+/// 'drawtime'/'time', optional 'id'); the output is sorted newest-slot-first by
+/// the actual draw date+time, so back-filled (catch-up) slots that were inserted
+/// out of id order still appear in correct chronological position.
+///
+/// Parses a draw 'date' ("YYYY-MM-DD") + 'time' ("h:mm AM/PM") into a DateTime
+/// for chronological sorting. Falls back to DateTime(0) on unparseable values so
+/// sorting stays stable instead of throwing.
+DateTime _parseDrawDateTime(String date, String time) {
+  int year = 0, month = 1, day = 1, hour = 0, minute = 0;
+  final dp = date.split('-');
+  if (dp.length == 3) {
+    year = int.tryParse(dp[0]) ?? 0;
+    month = int.tryParse(dp[1]) ?? 1;
+    day = int.tryParse(dp[2]) ?? 1;
+  }
+  final m = RegExp(r'(\d{1,2}):(\d{2})\s*([AaPp][Mm])').firstMatch(time.trim());
+  if (m != null) {
+    hour = int.tryParse(m.group(1)!) ?? 0;
+    minute = int.tryParse(m.group(2)!) ?? 0;
+    final mer = m.group(3)!.toUpperCase();
+    if (mer == 'PM' && hour != 12) hour += 12;
+    if (mer == 'AM' && hour == 12) hour = 0;
+  }
+  return DateTime(year, month, day, hour, minute);
+}
+
 List<Map<String, dynamic>> groupDrawsBySlot(List<dynamic> rows) {
   final List<String> order = [];
   final Map<String, List<Map<String, dynamic>>> groups = {};
@@ -225,6 +250,10 @@ List<Map<String, dynamic>> groupDrawsBySlot(List<dynamic> rows) {
       'drawtime': (g.first['drawtime'] ?? g.first['time'] ?? '').toString(),
     });
   }
+  // Sort newest-slot-first by actual draw date+time (not server/id order), so
+  // catch-up back-filled slots land in their correct chronological position.
+  out.sort((a, b) => _parseDrawDateTime(b['drawdate'].toString(), b['drawtime'].toString())
+      .compareTo(_parseDrawDateTime(a['drawdate'].toString(), a['drawtime'].toString())));
   return out;
 }
 
