@@ -53,10 +53,7 @@ class _ChooseGameState extends State<ChooseGame> {
               height: double.infinity,
               child: Opacity(
                 opacity: 0.8,
-                child: Image.asset(
-                  'assets/back.jpg',
-                  fit: BoxFit.fill,
-                ),
+                child: Image.asset('assets/back.jpg', fit: BoxFit.fill),
               ),
             ),
           ),
@@ -64,7 +61,7 @@ class _ChooseGameState extends State<ChooseGame> {
             top: 40,
             left: 20,
             child: Text(
-              'JK Delux',
+              'ABC Online Trading Game',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -75,30 +72,23 @@ class _ChooseGameState extends State<ChooseGame> {
           Positioned(
             top: 40,
             right: 20,
-            child: Obx(() => Text(
-              controller.username.value.isNotEmpty
-                  ? controller.username.value
-                  : 'Guest',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.amber,
+            child: Obx(
+              () => Text(
+                controller.username.value.isNotEmpty
+                    ? controller.username.value
+                    : 'Guest',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.amber,
+                ),
               ),
-            )),
+            ),
           ),
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'Choose the Game',
-                  style: TextStyle(
-                    fontSize: 35,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.amber,
-                  ),
-                ),
-                const SizedBox(height: 10),
                 Container(
                   width: 440,
                   height: 220,
