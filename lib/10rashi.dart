@@ -52,7 +52,7 @@ class Rashi extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Text(
-                    'JK Delux',
+                    'ABC Online Trading',
                     style: TextStyle(
                       color: Colors.amber,
                       fontSize: screenWidth * 0.03,

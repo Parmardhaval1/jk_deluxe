@@ -64,7 +64,7 @@ class _ChooseGameState extends State<ChooseGame> {
             top: 40,
             left: 20,
             child: Text(
-              'JK Delux',
+              'ABC Online Trading',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

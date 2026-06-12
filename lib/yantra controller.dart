@@ -230,7 +230,7 @@ class YantrasController extends GetxController {
   //         return pw.Column(
   //           crossAxisAlignment: pw.CrossAxisAlignment.start,
   //           children: [
-  //             pw.Text('JK Delux - Yantra Tickets',
+  //             pw.Text('ABC Online Trading - Yantra Tickets',
   //                 style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)),
   //             pw.SizedBox(height: 10),
   //             pw.Text('Username: ${username.value}'),
