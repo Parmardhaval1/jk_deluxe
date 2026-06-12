@@ -53,11 +53,7 @@ class Yantras extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Text(
-<<<<<<< HEAD
-                    'ABC Online game',
-=======
                     'ABC Online Trading',
->>>>>>> de711bc36e067bba64c2ba7037c9fc537150e06c
                     style: TextStyle(
                       color: Colors.amber,
                       fontSize: screenWidth * 0.03,
