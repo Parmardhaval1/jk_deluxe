@@ -346,6 +346,7 @@ class YantrasController extends GetxController {
     // Initial fetch
     fetchAvailableCoins();
     fetchLast5Draws();
+    _checkWins(); // seeds the announced-wins set on first run
 
     // Store the last known session to detect changes
     String lastSession = _getCurrentSession();
@@ -367,8 +368,18 @@ class YantrasController extends GetxController {
       // Regular refresh
       fetchAvailableCoins();
       fetchLast5Draws();
+      _checkWins(); // announce any newly-settled win
     });
   }
+
+  /// Announce any newly-settled WIN for this game (from settled history), once
+  /// each. See [checkAndAnnounceWins].
+  Future<void> _checkWins() => checkAndAnnounceWins(
+        historyEndpoint: 'Application/yantra_history.php',
+        gameKey: 'yantra',
+        username: username.value,
+        box: box,
+      );
 
   @override
   void onInit() {
@@ -526,6 +537,7 @@ class YantrasController extends GetxController {
 
     Future.delayed(const Duration(seconds: 10), () {
       shouldRefreshPage.value = true;
+      _checkWins(); // the new draw has settled by now — announce any win
       print('[${DateTime.now()}] Full page refresh triggered (10 seconds after session change)');
     });
   }

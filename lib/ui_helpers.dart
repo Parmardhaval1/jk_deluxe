@@ -1,6 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'api.dart';
 
 /// Image provider for a game item / draw: a cached NETWORK image when [path] is
 /// a URL (the dynamic admin-managed images), else a bundled AssetImage (initial
@@ -146,6 +150,61 @@ void showWinDialog(int coins) {
     ),
     barrierDismissible: false,
   );
+}
+
+/// Checks the user's settled betting history for any WINs that haven't been
+/// announced yet and shows [showWinDialog] once per new winning record.
+///
+/// This reads the AUTHORITATIVE settled result + winamount from the history
+/// endpoint ([historyEndpoint], e.g. 'Application/yantra_history.php'), so it
+/// works no matter who settled the draw — the server cron (settle_lib.php,
+/// which runs every 5 min and usually settles BEFORE the app's result.php poll)
+/// or the app itself. Winning record ids are remembered per game+user in
+/// [box] under 'wonIds_<gameKey>_<username>'; the first call only SEEDS that set
+/// (announces nothing) so pre-existing history never pops on login.
+Future<void> checkAndAnnounceWins({
+  required String historyEndpoint,
+  required String gameKey,
+  required String username,
+  required GetStorage box,
+}) async {
+  if (username.isEmpty) return;
+  final key = 'wonIds_${gameKey}_$username';
+  try {
+    final r = await http.get(Uri.parse(
+        Api.getUrl('$historyEndpoint?usernm=${Uri.encodeComponent(username)}')));
+    if (r.statusCode != 200) return;
+    final body = json.decode(r.body);
+    if (body is! Map || body['success'] != true || body['data'] is! List) {
+      return;
+    }
+    final rows = body['data'] as List;
+
+    final stored = box.read(key);
+    final bool firstRun = stored == null;
+    final Set<int> seen = (stored is List)
+        ? stored.map((e) => int.tryParse('$e') ?? -1).toSet()
+        : <int>{};
+
+    int total = 0;
+    final Set<int> winIds = {};
+    for (final row in rows) {
+      if (row is! Map) continue;
+      if ((row['result'] ?? '').toString().toUpperCase() != 'WIN') continue;
+      final id = int.tryParse('${row['id']}') ?? -1;
+      if (id < 0) continue;
+      winIds.add(id);
+      if (!firstRun && !seen.contains(id)) {
+        total += int.tryParse('${row['winamount']}') ?? 0;
+      }
+    }
+    // Seed on first run (announce nothing); thereafter remember every win id so
+    // each win is announced exactly once.
+    box.write(key, {...seen, ...winIds}.toList());
+    if (total > 0) showWinDialog(total);
+  } catch (_) {
+    // Ignore transient errors; the next poll will retry.
+  }
 }
 
 /// Yes/No confirmation dialog. Resolves to true only if the user confirms.

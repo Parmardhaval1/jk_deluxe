@@ -1,12 +1,10 @@
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'api.dart';
-import 'dart:convert';
 import 'dart:async';
 import '10rashi.dart';
 import '10toys.dart';
 import '10yantras.dart';
-import 'ui_helpers.dart';
 
 class ChooseGameController extends GetxController {
   final List<String> cardTexts = ['10 Yantras', '10 Toys', '10 Rashi'];
@@ -25,30 +23,6 @@ class ChooseGameController extends GetxController {
   void onClose() {
     _refreshTimer?.cancel();
     super.onClose();
-  }
-
-  /// Inspects a result-API response and shows the win popup for any draw that
-  /// THIS poll just settled as a WIN. result.php only returns still-unsettled
-  /// records and reports `result`/`win_amount` plus `updated:true` when this
-  /// call actually settled (and credited) the record — so this is the
-  /// authoritative, fire-exactly-once win signal (no coin-delta guessing, no
-  /// false positives from admin credits / refunds / pending selections).
-  void _announceWins(dynamic body) {
-    if (body is! Map) return;
-    final records = body['data'];
-    if (records is! List) return;
-    int totalWon = 0;
-    for (final r in records) {
-      if (r is! Map) continue;
-      final isWin = r['result']?.toString().toUpperCase() == 'WIN';
-      final justSettled = r['updated'] == true;
-      if (isWin && justSettled) {
-        totalWon += int.tryParse('${r['win_amount']}') ?? 0;
-      }
-    }
-    if (totalWon > 0) {
-      showWinDialog(totalWon);
-    }
   }
 
   void setUsername(String newUsername) {
@@ -82,8 +56,9 @@ class ChooseGameController extends GetxController {
       final response = await http.get(url, headers: {'Accept': 'application/json'});
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        _announceWins(data);
+        // Hitting result.php settles + credits any unsettled win as a fallback
+        // to the server cron. The WIN popup is shown by each game controller
+        // from settled history (checkAndAnnounceWins), not from here.
       } else {
         print('Server error: ${response.statusCode}');
       }
@@ -104,8 +79,7 @@ class ChooseGameController extends GetxController {
       final response = await http.get(url, headers: {'Accept': 'application/json'});
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        _announceWins(data);
+        // result.php settlement fallback; popup handled in the game controller.
       } else {
         print('Server error: ${response.statusCode}');
       }
@@ -126,8 +100,7 @@ class ChooseGameController extends GetxController {
       final response = await http.get(url, headers: {'Accept': 'application/json'});
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        _announceWins(data);
+        // result.php settlement fallback; popup handled in the game controller.
       } else {
         print('Server error: ${response.statusCode}');
       }
