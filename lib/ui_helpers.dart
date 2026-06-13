@@ -96,6 +96,58 @@ void showCoinsAddedDialog(int amount) {
   );
 }
 
+/// Winning popup, styled like [showSuccessDialog] (the "Ticket Purchased
+/// Successfully" dialog) for a consistent look: white rounded card, a single
+/// celebratory icon, the message, and a full-width blue OK button.
+void showWinDialog(int coins) {
+  Get.dialog(
+    Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 56, vertical: 24),
+      child: SizedBox(
+        width: 250,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.emoji_events, color: Color(0xFFF5A623), size: 54),
+              const SizedBox(height: 12),
+              const Text(
+                'Congratulations!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0E2B76)),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'You won $coins coins!',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Get.back(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0E2B76),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('OK'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+    barrierDismissible: false,
+  );
+}
+
 /// Yes/No confirmation dialog. Resolves to true only if the user confirms.
 Future<bool> showConfirmDialog({
   required String title,

@@ -318,19 +318,18 @@ class ToysController extends GetxController {
           print('[${DateTime.now()}] [DEBUG] New coins value: $newCoins');
           print('[${DateTime.now()}] [DEBUG] Before update - initialAvailable: ${initialAvailable.value}, available: ${available.value}');
 
-          final oldCoins = available.value;
           final wasInitialized = _coinsInitialized;
-          final difference = newCoins - oldCoins;
 
-          // Distinguish admin-added coins from game winnings; skip on first poll.
+          // Admin-added coins are announced here (authoritative via
+          // admin_credit.php). WIN popups are NO LONGER inferred from coin
+          // balance deltas — that heuristic produced false "You won X" popups
+          // (e.g. an admin credit already consumed by another game controller,
+          // ticket-deletion refunds, or pending unbought selections). Wins are
+          // now driven by the authoritative result API in ChooseGameController.
           final adminAdded = await _checkAdminCredit();
 
-          if (wasInitialized) {
-            if (adminAdded > 0) {
-              showCoinsAddedDialog(adminAdded);
-            } else if (difference > 0 && difference % 100 == 0) {
-              _showWinDialog(difference);
-            }
+          if (wasInitialized && adminAdded > 0) {
+            showCoinsAddedDialog(adminAdded);
           }
           _coinsInitialized = true;
 
@@ -349,21 +348,6 @@ class ToysController extends GetxController {
     }
   }
 
-  void _showWinDialog(int coinsWon) {
-    Get.dialog(
-      AlertDialog(
-        title: const Text('Congratulations!', style: TextStyle(color: Colors.green)),
-        content: Text('You won $coinsWon coins!'),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-      barrierDismissible: false,
-    );
-  }
 
   void _startAutoRefreshTimer() {
     print('[${DateTime.now()}] [toy DEBUG for session] Starting auto-refresh timer');

@@ -6,6 +6,7 @@ import 'dart:async';
 import '10rashi.dart';
 import '10toys.dart';
 import '10yantras.dart';
+import 'ui_helpers.dart';
 
 class ChooseGameController extends GetxController {
   final List<String> cardTexts = ['10 Yantras', '10 Toys', '10 Rashi'];
@@ -24,6 +25,30 @@ class ChooseGameController extends GetxController {
   void onClose() {
     _refreshTimer?.cancel();
     super.onClose();
+  }
+
+  /// Inspects a result-API response and shows the win popup for any draw that
+  /// THIS poll just settled as a WIN. result.php only returns still-unsettled
+  /// records and reports `result`/`win_amount` plus `updated:true` when this
+  /// call actually settled (and credited) the record — so this is the
+  /// authoritative, fire-exactly-once win signal (no coin-delta guessing, no
+  /// false positives from admin credits / refunds / pending selections).
+  void _announceWins(dynamic body) {
+    if (body is! Map) return;
+    final records = body['data'];
+    if (records is! List) return;
+    int totalWon = 0;
+    for (final r in records) {
+      if (r is! Map) continue;
+      final isWin = r['result']?.toString().toUpperCase() == 'WIN';
+      final justSettled = r['updated'] == true;
+      if (isWin && justSettled) {
+        totalWon += int.tryParse('${r['win_amount']}') ?? 0;
+      }
+    }
+    if (totalWon > 0) {
+      showWinDialog(totalWon);
+    }
   }
 
   void setUsername(String newUsername) {
@@ -58,7 +83,7 @@ class ChooseGameController extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print('API Response: $data');
+        _announceWins(data);
       } else {
         print('Server error: ${response.statusCode}');
       }
@@ -80,7 +105,7 @@ class ChooseGameController extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print('API Response: $data');
+        _announceWins(data);
       } else {
         print('Server error: ${response.statusCode}');
       }
@@ -102,7 +127,7 @@ class ChooseGameController extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print('API Response: $data');
+        _announceWins(data);
       } else {
         print('Server error: ${response.statusCode}');
       }
