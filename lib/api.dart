@@ -8,9 +8,10 @@
 class Api {
   Api._();
 
-  /// Production backend. (The old demo host demojkd.balajitechbiz.com served
-  /// the same data; the live site is jkdeluxonline.com.)
-  static const String baseUrl = 'https://jkdeluxonline.com';
+  /// Production backend. (Earlier hosts: demojkd.balajitechbiz.com served the
+  /// same data; jkdeluxonline.com is a sibling deployment on the same cPanel/DB.
+  /// The live API for this app is abconlinetrading.com/Application/.)
+  static const String baseUrl = 'https://abconlinetrading.com';
 
   /// Returns an absolute URL for [path] under [baseUrl].
   /// Accepts API endpoints ('Application/result.php?username=x') or asset
