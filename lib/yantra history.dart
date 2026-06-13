@@ -9,7 +9,12 @@ class YantraHistory extends StatelessWidget {
 
   YantraHistory({required this.username})
       : controller = Get.put(YantraHistoryController()) {
-    controller.setUsername(username);
+    // Defer to after the first frame: setUsername mutates observables (and
+    // starts the fetch). Calling it here runs during the build phase and
+    // triggers "setState()/markNeedsBuild() called during build" on the Obx.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.setUsername(username);
+    });
   }
 
   @override
